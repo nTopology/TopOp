@@ -37,7 +37,7 @@ xold(nely, nelx)
     x->fill(volfrac);
     calculatePassive();
 	float x, y, z;
-	loop(x,y,z);
+	step(x,y,z);
 
     // start iteration
 //     while (change > maxChange){
@@ -74,7 +74,7 @@ TopOpt::~TopOpt()
 	delete F;
 }
 
-bool TopOpt::loop(float& compliance, float& volume, float& change)
+bool TopOpt::step(float& compliance, float& volume, float& change)
 {
 
 	if (mChange < mMaxChange){

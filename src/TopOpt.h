@@ -20,7 +20,7 @@ public:
     TopOpt(int nelx, int nely, tfloat volfrac, tfloat penal, tfloat rmin, tfloat maxChange = 0.01);
 	~TopOpt();
 
-	bool loop(float& compliance, float& volume, float& change);
+	bool step(float& compliance, float& volume, float& change);
 	const Matrix& getMatrix()const{ return *x; }
 
 private:

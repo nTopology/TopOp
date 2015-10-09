@@ -53,7 +53,7 @@ void topOp::setup()
 	mCamUi = CameraUi(&mCam, getWindow());
 
 
-
+	mTopOp = std::make_unique<TopOpt>(160, 80, .33, 1.5, 1.5, .01);
 }
 
 void topOp::mouseDown(MouseEvent event)

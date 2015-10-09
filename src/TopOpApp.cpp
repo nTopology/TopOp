@@ -11,7 +11,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class geodesicApp : public App {
+class topOp : public App {
 public:
 	void setup() override;
 	void mouseDown(MouseEvent event) override;
@@ -34,9 +34,9 @@ private:
 	CameraUi					mCamUi;
 };
 
-void geodesicApp::setup()
+void topOp::setup()
 {
-	ObjLoader loadMesh(loadFile("bunny_lr.obj"));
+	ObjLoader loadMesh(loadFile("../bunny_lr.obj"));
 	mTriMesh = TriMesh::create(loadMesh);
 	mTriMesh->recalculateNormals(false);
 
@@ -56,29 +56,29 @@ void geodesicApp::setup()
 
 }
 
-void geodesicApp::mouseDown(MouseEvent event)
+void topOp::mouseDown(MouseEvent event)
 {
 	mCamUi.mouseDown(event);
 }
 
 
-void geodesicApp::mouseMove(MouseEvent event)
+void topOp::mouseMove(MouseEvent event)
 {
 }
 
 
-void geodesicApp::mouseDrag(MouseEvent event)
+void topOp::mouseDrag(MouseEvent event)
 {
 	mCamUi.mouseDrag(event);
 }
 
-void geodesicApp::update()
+void topOp::update()
 {
 
 
 }
 
-void geodesicApp::draw()
+void topOp::draw()
 {
 	gl::clear(Color(0, 0, 0));
 
@@ -107,4 +107,4 @@ void geodesicApp::draw()
 
 }
 
-CINDER_APP(geodesicApp, RendererGl)
+CINDER_APP(topOp, RendererGl)

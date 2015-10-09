@@ -1,5 +1,5 @@
 #include "Matrix.h"
-#include "mkl.h"
+//#include "mkl.h"
 #include <iostream>
 #include <cassert>
 #include <cmath>
@@ -62,11 +62,11 @@ void Matrix::print(){
 
 void Matrix::multiply(const Matrix &m, Matrix *dest){
 //#if true
-       cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, rows, m.columns, columns, 1.0, data, rows, m.data, m.rows, 0.0, dest->data, dest->rows);
+     //  cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, rows, m.columns, columns, 1.0, data, rows, m.data, m.rows, 0.0, dest->data, dest->rows);
 // #else
 //         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, rows, m.columns, columns, 1.0, data, rows, m.data, m.rows, 0.0, dest->data, dest->rows);
 // #endif
- /* 
+  
     for (int i=0;i<dest->rows;i++){
         for (int j=0;j<dest->columns;j++){
             tfloat product = 0;
@@ -76,7 +76,7 @@ void Matrix::multiply(const Matrix &m, Matrix *dest){
             dest->set(i,j,product);
         }
     }
-  */
+  
 }
 
 Matrix Matrix::multiply(const Matrix &m){

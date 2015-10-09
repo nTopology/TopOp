@@ -36,9 +36,9 @@ private:
 
 void geodesicApp::setup()
 {
-	ObjLoader loadMesh(loadFile("bunny.obj"));
+	ObjLoader loadMesh(loadFile("bunny_lr.obj"));
 	mTriMesh = TriMesh::create(loadMesh);
-	mTriMesh->recalculateNormals(true);
+	mTriMesh->recalculateNormals(false);
 
 	//mTriMesh = TriMesh::create(geom::Teapot().subdivisions(6));
 	auto lambertShader = gl::getStockShader(gl::ShaderDef().color().lambert());
@@ -48,8 +48,8 @@ void geodesicApp::setup()
 	mWirePlane = gl::Batch::create(geom::WirePlane().size(vec2(10)).subdivisions(ivec2(10)), colorShader);
 
 	// Set up the camera.
-	mCam.lookAt(vec3(2.0f, 3.0f, 1.0f), vec3(0));
-	mCam.setPerspective(40.0f, getWindowAspectRatio(), 0.01f, 100.0f);
+	mCam.lookAt(vec3(150.0f, 3.0f, 1.0f), vec3(0));
+	mCam.setPerspective(40.0f, getWindowAspectRatio(), 0.01f, 300.0f);
 	mCamUi = CameraUi(&mCam, getWindow());
 
 

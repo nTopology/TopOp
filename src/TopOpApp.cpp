@@ -192,13 +192,9 @@ void topOp::draw()
 	gl::clear(Color(0, 0, 0));
 
 	// Set up the camera.
-	gl::ScopedMatrices push;
 	gl::setMatrices(mCam);
-
 	// Enable depth buffer.
 	gl::ScopedDepth depth(true);
-
-
 	// Draw the mesh.
 	{
 		gl::ScopedGlslProg scopedGlslProg(gl::context()->getStockShader(gl::ShaderDef().color()));

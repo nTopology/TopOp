@@ -144,13 +144,9 @@ void topOp::initMesh()
 			verts.push_back(v1);
 			verts.push_back(v2);
 			verts.push_back(v3);
-
-			colors.push_back(glm::vec4{ 1.f,0.f,0.f,1.f });
-			colors.push_back(glm::vec4{ 1.f,0.f,0.f,1.f });
-			colors.push_back(glm::vec4{ 1.f,0.f,0.f,1.f });
-			colors.push_back(glm::vec4{ 1.f,0.f,0.f,1.f });
-			colors.push_back(glm::vec4{ 1.f,0.f,0.f,1.f });
-			colors.push_back(glm::vec4{ 1.f,0.f,0.f,1.f });
+			for (auto k = 0; k < 6; ++k) {
+				colors.push_back(glm::vec4{ 1.f,0.f,0.f,1.f });
+			}
 		}
 	}
 

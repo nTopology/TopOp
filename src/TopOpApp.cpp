@@ -101,13 +101,20 @@ void topOp::keyDown(KeyEvent event)
 	if (code == 32) {
 		run = !run;
 	}
+	else if (code == 114) {
+		resetSim();
+	}
 }
 
 void topOp::update()
 {
 	if (run) {
-		mTopOp->step(comp, vol, change);
+		auto goAgain = mTopOp->step(comp, vol, change);
 		updateMesh();
+
+		if (!goAgain) {
+			run = false;
+		}
 	}
 }
 
@@ -170,18 +177,10 @@ void topOp::updateMesh()
 			auto mVal = mat.get(j, i);
 			cinder::Color c(cinder::ColorModel::CM_HSV, { mVal,mVal,mVal });
 			auto val = glm::vec4{ c.r,c.g,c.b,1.0f };
-			*iter = val;
-			iter++;
-			*iter = val;
-			iter++;
-			*iter = val;
-			iter++;
-			*iter = val;
-			iter++;
-			*iter = val;
-			iter++;
-			*iter = val;
-			iter++;
+			for (auto k = 0; k < 6; ++k) {
+				*iter = val;
+				iter++;
+			}
 		}
 	}
 	iter.unmap();

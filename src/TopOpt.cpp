@@ -79,6 +79,7 @@ bool TopOpt::step(tfloat& compliance, tfloat& volume, tfloat& change, bool verbo
 			<< std::endl << "change: " << std::to_string(change)
 			<< std::endl;
 	}
+	return true;
 }
 
 void TopOpt::exportResults() const

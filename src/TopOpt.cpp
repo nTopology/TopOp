@@ -24,7 +24,7 @@ mMaxChange(maxChange),
 mChange(1.0),
 xold(nely, nelx)
 {
-    x = new Matrix(nely, nelx);
+    x = new Matrix (nely, nelx);
     xNew = new Matrix(nely, nelx);
 
     dc = new Matrix(nely, nelx);
@@ -38,30 +38,6 @@ xold(nely, nelx)
     calculatePassive();
 	float x, y, z;
 	step(x,y,z);
-
-    // start iteration
-//     while (change > maxChange){
-//         loop ++;
-//         xold.set(*x);
-// 
-//         FEAnalysis();
-//         
-//         tfloat compliance = objectiveFunctionAndSensitivityAnalyses();
-//         
-//         // Filtering of sensitivities
-//         meshIndependencyFilter();
-//         
-//         // Design update by the optimality criteria method
-//         optimalityCriteriaBasedOptimization();
-//         
-//         // print results
-//         change = x->maxDiff(xold);
-//         tfloat volume = x->sum()/(nelx*nely);
-//         printf("%% It.: %i Obj.: %f Vol.: %f ch.: %f \n", loop, compliance, volume, change);
-//     }
-   // exportResultMatlab(x, loop);
-	//exportResultTxt(x, loop);
-
 }
 
 TopOpt::~TopOpt()
@@ -114,7 +90,7 @@ void TopOpt::exportResultMatlab(Matrix *x, int iteration){
     printf("colormap(gray); imagesc(-x); axis equal; axis tight; axis off;pause(1e-6);");
 //    printf("imwrite(1-x,'topopt_%i.png');", iteration);
 //    printf("imwrite(1-x,'topopt_volfrac_%f_%i.png');", volfrac,iteration);
-    printf("imwrite(1-x,'topopt_passive_%f_%i.png');", passiveRadius,iteration);
+   // printf("imwrite(1-x,'topopt_passive_%f_%i.png');", passiveRadius,iteration);
 #ifdef RAMP    
     //printf("imwrite(1-x,'topopt_RAMP_%f_%i.png');", penal,iteration);
 #else

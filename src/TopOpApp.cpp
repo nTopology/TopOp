@@ -11,20 +11,26 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
+
 class topOp : public App {
 public:
 	void setup() override;
 	void mouseDown(MouseEvent event) override;
 	void mouseMove(MouseEvent event) override;
 	void mouseDrag(MouseEvent event) override;
-
+	void keyDown(KeyEvent event)override;
 	void update() override;
+	void resetSim();
+
+	void initMesh();
+	void updateMesh();
 	void draw() override;
+
 
 private:
 	std::unique_ptr<TopOpt> mTopOp;
 	TriMeshRef			mTriMesh;		//! The 3D mesh.
-	gl::BatchRef		mMesh;
+	gl::BatchRef		mMeshBatch;
 	gl::BatchRef		mWirePlane;
 	gl::VboMeshRef	mVboMesh;
 
@@ -32,33 +38,50 @@ private:
 private:
 	CameraPersp					mCam;
 	CameraUi					mCamUi;
+
+	const int eX = 80;
+	const int eY = 40;
+	const double volFrac = .5;
+	const double penal = 3.0;
+	const double rmin = 3.0;
+	const double maxChange = .01;
+
+	double comp;
+	double vol;
+	double change;
+
+	bool run;
 };
 
 void topOp::setup()
 {
-	ObjLoader loadMesh(loadFile("../bunny_lr.obj"));
-	mTriMesh = TriMesh::create(loadMesh);
-	mTriMesh->recalculateNormals(false);
 
-	//mTriMesh = TriMesh::create(geom::Teapot().subdivisions(6));
-	auto lambertShader = gl::getStockShader(gl::ShaderDef().color().lambert());
-	auto colorShader = gl::getStockShader(gl::ShaderDef().color());
-
-	mMesh = gl::Batch::create(*mTriMesh, lambertShader);
-	mWirePlane = gl::Batch::create(geom::WirePlane().size(vec2(10)).subdivisions(ivec2(10)), colorShader);
-
+	run = false;
 	// Set up the camera.
-	mCam.lookAt(vec3(150.0f, 3.0f, 1.0f), vec3(0));
+	mCam.lookAt(vec3(0, 0, 200.0f), vec3(0,0,0.f));
+	//mCam.setOrtho(0, getWindowWidth(),0,getWindowHeight(),0,10.f);
 	mCam.setPerspective(40.0f, getWindowAspectRatio(), 0.01f, 300.0f);
 	mCamUi = CameraUi(&mCam, getWindow());
 
 
-	mTopOp = std::make_unique<TopOpt>(160, 80, .33, 1.5, 1.5, .01);
+	mTopOp = std::make_unique<TopOpt>(eX, eY, volFrac, penal, rmin, .01);
+
+	initMesh();
 }
 
 void topOp::mouseDown(MouseEvent event)
 {
-	mCamUi.mouseDown(event);
+	if (event.isLeftDown()) {
+		if (!run) {
+			run = true;
+		}
+		else {
+			run = false;
+		}
+	}
+	else if (event.isRightDown()) {
+		resetSim();
+	}
 }
 
 
@@ -69,13 +92,99 @@ void topOp::mouseMove(MouseEvent event)
 
 void topOp::mouseDrag(MouseEvent event)
 {
-	mCamUi.mouseDrag(event);
+	//mCamUi.mouseDrag(event);
+}
+
+void topOp::keyDown(KeyEvent event)
+{
+	auto code = event.getCode();
+	if (code == 32) {
+		run = !run;
+	}
 }
 
 void topOp::update()
 {
+	if (run) {
+		mTopOp->step(comp, vol, change);
+		updateMesh();
+	}
+}
+
+void topOp::resetSim()
+{
+	mTopOp = std::make_unique<TopOpt>(eX, eY, volFrac, penal, rmin, .01);
+	initMesh();
+}
+
+void topOp::initMesh()
+{	
+	std::vector<glm::vec3> verts;
+	std::vector<glm::vec4> colors;
+	auto& mat = mTopOp->getX();
+
+	for (int i = 0; i < eX; ++i) {
+		for (int j = 0; j < eY; ++j) {
+			auto v0 = glm::vec3((float)i, (float)eY-j, 0.f);
+			auto v1 = glm::vec3((float)i+1, (float)eY-j, 0.f);
+			auto v2 = glm::vec3((float)i+1, (float)eY-j+1, 0.f);
+			auto v3 = glm::vec3((float)i, (float)eY-j+1, 0.f);
+		
+			verts.push_back(v0);
+			verts.push_back(v1);
+			verts.push_back(v3);
+
+			verts.push_back(v1);
+			verts.push_back(v2);
+			verts.push_back(v3);
+
+			colors.push_back(glm::vec4{ 1.f,0.f,0.f,1.f });
+			colors.push_back(glm::vec4{ 1.f,0.f,0.f,1.f });
+			colors.push_back(glm::vec4{ 1.f,0.f,0.f,1.f });
+			colors.push_back(glm::vec4{ 1.f,0.f,0.f,1.f });
+			colors.push_back(glm::vec4{ 1.f,0.f,0.f,1.f });
+			colors.push_back(glm::vec4{ 1.f,0.f,0.f,1.f });
+		}
+	}
 
 
+	auto layout = gl::VboMesh::Layout{};
+	//layout.interleave(false);
+	layout.attrib(geom::POSITION, 3);
+	layout.attrib(geom::COLOR, 4);
+
+	auto vboTriangles = gl::VboMesh::create(verts.size(), GL_TRIANGLES, { layout });
+	vboTriangles->bufferAttrib(geom::POSITION, sizeof(vec3) * verts.size(), verts.data());
+	vboTriangles->bufferAttrib(geom::COLOR, sizeof(vec3) * colors.size(), colors.data());
+
+	mMeshBatch = gl::Batch::create(vboTriangles, gl::getStockShader(gl::ShaderDef().color()));
+}
+
+void topOp::updateMesh()
+{
+	auto iter = mMeshBatch->getVboMesh()->mapAttrib4f(geom::COLOR, false);
+	auto& mat = mTopOp->getX();
+
+	for (int i = 0; i < mat.getColumns(); ++i) {
+		for (int j = 0; j < mat.getRows(); ++j) {
+			auto mVal = mat.get(j, i);
+			cinder::Color c(cinder::ColorModel::CM_HSV, { mVal,mVal,mVal });
+			auto val = glm::vec4{ c.r,c.g,c.b,1.0f };
+			*iter = val;
+			iter++;
+			*iter = val;
+			iter++;
+			*iter = val;
+			iter++;
+			*iter = val;
+			iter++;
+			*iter = val;
+			iter++;
+			*iter = val;
+			iter++;
+		}
+	}
+	iter.unmap();
 }
 
 void topOp::draw()
@@ -89,20 +198,13 @@ void topOp::draw()
 	// Enable depth buffer.
 	gl::ScopedDepth depth(true);
 
-	// Draw the grid on the floor.
-	{
-		gl::ScopedColor color(Color::gray(0.2f));
-		mWirePlane->draw();
-	}
 
 	// Draw the mesh.
 	{
-		gl::ScopedColor color(Color::white());
-
-		gl::ScopedModelMatrix model;
-		//	gl::multModelMatrix(mTransform);
-
-		mMesh->draw();
+		gl::ScopedGlslProg scopedGlslProg(gl::context()->getStockShader(gl::ShaderDef().color()));
+		mMeshBatch->draw();
+		gl::multModelMatrix(glm::scale(glm::vec3{ -1.f,1.f,1.f }));
+		mMeshBatch->draw();
 	}
 
 }

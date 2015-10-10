@@ -128,7 +128,6 @@ void topOp::initMesh()
 {	
 	std::vector<glm::vec3> verts;
 	std::vector<glm::vec4> colors;
-	auto& mat = mTopOp->getX();
 
 	for (int i = 0; i < eX; ++i) {
 		for (int j = 0; j < eY; ++j) {
